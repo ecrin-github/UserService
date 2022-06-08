@@ -7,11 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+      <Folder Include="Controllers" />
+      <Folder Include="Models\DbContext" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers" />
+      <PackageReference Include="IdentityServer4" Version="4.1.2" />
     </ItemGroup>
 
 </Project>

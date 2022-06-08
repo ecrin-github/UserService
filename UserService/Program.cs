@@ -1,24 +1,99 @@
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.OpenApi.Models;
+using UserService.Configs;
+using UserService.Extensions;
+using UserService.Middleware;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+/*
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.KnownProxies.Add(IPAddress.Parse("51.210.99.16"));
+});
+*/
 
+builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc($"{ApiConfigs.ApiVersion}", 
+        new OpenApiInfo { Title = "The User API Documentation", Version = $"{ApiConfigs.ApiVersion}" });
+    c.EnableAnnotations();
+    var securitySchema = new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        Reference = new OpenApiReference
+        {
+            Type = ReferenceType.SecurityScheme,
+            Id = "Bearer"
+        }
+    };
+    c.AddSecurityDefinition("Bearer", securitySchema);
+    var securityRequirement = new OpenApiSecurityRequirement
+    {
+        { securitySchema, new[] { "Bearer" } }
+    };
+    c.AddSecurityRequirement(securityRequirement);
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(ApiConfigs.OpenCorsPolicyName, p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+});
+
+builder.Services.Configure<KestrelServerOptions>(options =>
+{
+    options.AllowSynchronousIO = true;
+});
+
+// builder.WebHost.UseUrls("https://localhost:5270");
+
+// Docker setting
+// builder.WebHost.UseKestrel(options => {options.Listen(IPAddress.Any, 80);});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+/*
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
+*/
+
+app.UseMiddleware<ExceptionMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
 
-app.UseHttpsRedirection();
+app.UseStaticFiles();
 
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.DocumentTitle = "The User API Documentation";
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "The User API Documentation (v.1)");
+    c.InjectStylesheet("/documentation/swagger-custom/swagger-custom-styles.css");
+    c.InjectJavascript("/documentation/swagger-custom/swagger-custom-script.js");
+    c.RoutePrefix = "api/rest/documentation";
+});
+
+app.UseHttpsRedirection();
+app.UseRouting();
+
+app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseCors(ApiConfigs.OpenCorsPolicyName);
 
 app.MapControllers();
 
