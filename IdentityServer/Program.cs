@@ -54,6 +54,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseIdentityServer();
+
 app.UseAuthorization();
 
 app.UseCors(ApiConfigs.OpenCorsPolicyName);
