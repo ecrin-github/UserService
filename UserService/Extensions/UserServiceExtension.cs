@@ -50,24 +50,10 @@ public static class UserServiceExtension
         services.AddAuthentication("Bearer")
             .AddJwtBearer("Bearer", options =>
             {
-                options.Authority = "https://localhost:7011";
-                    
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateAudience = false
-                };
+                options.Authority = IdentityConfigs.AuthorityUrl;
+                options.TokenValidationParameters.ValidateAudience = false;
             });
-            
-        // adds an authorization policy to make sure the token is for scope 'api1'
-        services.AddAuthorization(options =>
-        {
-            options.AddPolicy("ApiScope", policy =>
-            {
-                policy.RequireAuthenticatedUser();
-                policy.RequireClaim("scope", "openid");
-            });
-        });
-        
+
 
         return services;
     }

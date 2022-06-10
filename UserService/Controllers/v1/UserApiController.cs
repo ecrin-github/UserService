@@ -9,8 +9,7 @@ public class UserApiController : BaseUserApiController
     [HttpGet("claims")]
     public IActionResult GetClaims()
     {
-        var claims = User.Claims.Select(claim => $"Claim type: {claim.Type} - Claim value: {claim.Value}").ToList();
-        return Ok(claims);
+        return new JsonResult(from c in User.Claims select new { c.Type, c.Value });
     }
 
     [HttpGet("logout")]
