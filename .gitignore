@@ -8,8 +8,6 @@ riderModule.iml
 .vscode
 .vs
 
-IdentityServer/Configs
-IdentityServer/Models/DbContext
+AuthorizationServer/Configs
 
 UserService/Configs
-UserService/Models/DbContext
