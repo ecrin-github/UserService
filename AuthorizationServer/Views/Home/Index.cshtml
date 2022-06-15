@@ -1,0 +1,26 @@
+@using System.Diagnostics
+
+@{
+    var version = FileVersionInfo.GetVersionInfo(typeof(IdentityServer4.Hosting.IdentityServerMiddleware).Assembly.Location).ProductVersion.Split('+').First();
+}
+
+<div class="welcome-page">
+    <h1>
+        <img src="~/icon.png" 
+             width="55" height="55">
+        Welcome to ECRIN AAI
+        <small class="text-muted">(version 0.1.1)</small>
+    </h1>
+
+    <ul>
+        <li>
+            Discovery document: <a href="~/.well-known/openid-configuration">link</a>
+        </li>
+        <li>
+            Claims of the current session: <a href="~/diagnostics">link</a>.
+        </li>
+        <li>
+            Storage grants: <a href="~/grants">link</a>.
+        </li>
+    </ul>
+</div>
