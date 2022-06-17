@@ -1,6 +1,8 @@
 using AuthorizationServer.Configs;
 using AuthorizationServer.Models;
 using AuthorizationServer.Models.DbContext;
+using AuthorizationServer.Services;
+using IdentityServer4.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,6 +36,8 @@ public static class AuthorizationServerExtension
             .AddInMemoryClients(IdentityServerConfigs.Clients)
             .AddAspNetIdentity<User>()
             .AddDeveloperSigningCredential();
+
+        services.AddScoped<IProfileService, ProfileService>();
 
         return services;
     }

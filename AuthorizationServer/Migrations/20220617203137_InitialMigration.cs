@@ -34,6 +34,15 @@ namespace AuthorizationServer.Migrations
                 columns: table => new
                 {
                     id = table.Column<string>(type: "text", nullable: false),
+                    given_name = table.Column<string>(type: "text", nullable: true),
+                    first_name = table.Column<string>(type: "text", nullable: true),
+                    full_name = table.Column<string>(type: "text", nullable: true),
+                    website = table.Column<string>(type: "text", nullable: true),
+                    organisation = table.Column<string>(type: "text", nullable: true),
+                    organisation_id = table.Column<int>(type: "integer", nullable: true),
+                    address = table.Column<string>(type: "text", nullable: true),
+                    location = table.Column<string>(type: "text", nullable: true),
+                    person_id = table.Column<int>(type: "integer", nullable: true),
                     user_name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     normalized_user_name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),

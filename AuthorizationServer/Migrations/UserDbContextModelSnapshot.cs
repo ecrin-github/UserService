@@ -33,6 +33,10 @@ namespace AuthorizationServer.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("access_failed_count");
 
+                    b.Property<string>("Address")
+                        .HasColumnType("text")
+                        .HasColumnName("address");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text")
@@ -46,6 +50,22 @@ namespace AuthorizationServer.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean")
                         .HasColumnName("email_confirmed");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("text")
+                        .HasColumnName("first_name");
+
+                    b.Property<string>("FullName")
+                        .HasColumnType("text")
+                        .HasColumnName("full_name");
+
+                    b.Property<string>("GivenName")
+                        .HasColumnType("text")
+                        .HasColumnName("given_name");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("text")
+                        .HasColumnName("location");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean")
@@ -65,9 +85,21 @@ namespace AuthorizationServer.Migrations
                         .HasColumnType("character varying(256)")
                         .HasColumnName("normalized_user_name");
 
+                    b.Property<string>("Organisation")
+                        .HasColumnType("text")
+                        .HasColumnName("organisation");
+
+                    b.Property<int?>("OrganisationId")
+                        .HasColumnType("integer")
+                        .HasColumnName("organisation_id");
+
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text")
                         .HasColumnName("password_hash");
+
+                    b.Property<int?>("PersonId")
+                        .HasColumnType("integer")
+                        .HasColumnName("person_id");
 
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("text")
@@ -89,6 +121,10 @@ namespace AuthorizationServer.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
                         .HasColumnName("user_name");
+
+                    b.Property<string>("Website")
+                        .HasColumnType("text")
+                        .HasColumnName("website");
 
                     b.HasKey("Id")
                         .HasName("pk_users");

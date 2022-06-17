@@ -18,76 +18,169 @@ public static class SeedData
         context?.Database.Migrate();
 
         var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-        var admin = userMgr.FindByNameAsync("admin").Result;
+        var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+        var adminRole = roleMgr.FindByNameAsync(RoleConfigs.AdminRoleConfigs.RoleName).Result;
+        if (adminRole == null)
+        {
+            adminRole = new IdentityRole
+            {
+                Id = RoleConfigs.AdminRoleConfigs.RoleId,
+                Name = RoleConfigs.AdminRoleConfigs.RoleName,
+                NormalizedName = RoleConfigs.AdminRoleConfigs.RoleNormalizedName
+            };
+            var res = roleMgr.CreateAsync(adminRole).Result;
+            if (!res.Succeeded)
+            {
+                throw new Exception(res.Errors.First().Description);
+            }
+        }
+        
+        var managerRole = roleMgr.FindByNameAsync(RoleConfigs.ManagerRoleConfigs.RoleName).Result;
+        if (managerRole == null)
+        {
+            managerRole = new IdentityRole
+            {
+                Id = RoleConfigs.ManagerRoleConfigs.RoleId,
+                Name = RoleConfigs.ManagerRoleConfigs.RoleName,
+                NormalizedName = RoleConfigs.ManagerRoleConfigs.RoleNormalizedName
+            };
+            var res = roleMgr.CreateAsync(managerRole).Result;
+            if (!res.Succeeded)
+            {
+                throw new Exception(res.Errors.First().Description);
+            }
+        }
+        
+        var userRole = roleMgr.FindByNameAsync(RoleConfigs.UserRoleConfigs.RoleName).Result;
+        if (userRole == null)
+        {
+            userRole = new IdentityRole
+            {
+                Id = RoleConfigs.UserRoleConfigs.RoleId,
+                Name = RoleConfigs.UserRoleConfigs.RoleName,
+                NormalizedName = RoleConfigs.UserRoleConfigs.RoleNormalizedName
+            };
+            var res = roleMgr.CreateAsync(userRole).Result;
+            if (!res.Succeeded)
+            {
+                throw new Exception(res.Errors.First().Description);
+            }
+        }
+        
+        var admin = userMgr.FindByNameAsync(UserConfigs.Admin.UserName).Result;
         if (admin == null)
         {
             admin = new User
             {
-                UserName = UserConfigs.InternalUser.UserName,
+                Id = UserConfigs.Admin.Id,
+                UserName = UserConfigs.Admin.UserName,
                 Email = "admin@email.com",
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                GivenName = "Sergei",
+                FirstName = "Gorianin",
+                FullName = "Sergei Gorianin",
+                Website = "https://sg.org",
+                Organisation = "ECRIN",
+                OrganisationId = 12345,
+                Address = "Bakinskaya st. 4/2",
+                Location = "Astrakhan, Russia",
+                PersonId = 11313
             };
-            var result = userMgr.CreateAsync(admin, UserConfigs.InternalUser.Password).Result;
+            var result = userMgr.CreateAsync(admin, UserConfigs.Admin.Password).Result;
             if (!result.Succeeded)
             {
                 throw new Exception(result.Errors.First().Description);
             }
 
-            result = userMgr.AddClaimsAsync(admin, new Claim[]{
-                new (JwtClaimTypes.Name, "Sergei Gorianin"),
-                new (JwtClaimTypes.GivenName, "Sergei"),
-                new (JwtClaimTypes.FamilyName, "Gorianin"),
-                new (JwtClaimTypes.WebSite, "https://sg.com"),
-                new (JwtClaimTypes.Role, RoleConfigs.InternalUserRoleConfigs.RoleName),
-                new ("organisation", "ECRIN"),
-                new (JwtClaimTypes.PhoneNumber, "1234567890"),
-                new (JwtClaimTypes.Address, "Astrakhan, Russia"),
-            }).Result;
-            if (!result.Succeeded)
+            var addedRole = userMgr.AddToRoleAsync(admin, RoleConfigs.AdminRoleConfigs.RoleName).Result;
+            if (addedRole == null)
             {
-                throw new Exception(result.Errors.First().Description);
-            }
+                throw new Exception(addedRole?.Errors.First().Description);
+            }            
             Log.Debug("admin created");
         }
         else
         {
             Log.Debug("admin already exists");
         }
-
-        var user = userMgr.FindByNameAsync("user").Result;
+        
+        
+        var manager = userMgr.FindByNameAsync(UserConfigs.Manager.UserName).Result;
+        if (manager == null)
+        {
+            manager = new User
+            {
+                Id = UserConfigs.Manager.Id,
+                UserName = UserConfigs.Manager.UserName,
+                Email = "manager@email.com",
+                EmailConfirmed = true,
+                GivenName = "John",
+                FirstName = "Doe",
+                FullName = "John Doe",
+                Website = "https://jd.org",
+                Organisation = "Organisation name",
+                OrganisationId = 54321,
+                Address = "5 st. Watt",
+                Location = "Paris, France",
+                PersonId = 1231
+            };
+            var result = userMgr.CreateAsync(manager, UserConfigs.Manager.Password).Result;
+            if (!result.Succeeded)
+            {
+                throw new Exception(result.Errors.First().Description);
+            }
+            
+            var addedRole = userMgr.AddToRoleAsync(manager, RoleConfigs.ManagerRoleConfigs.RoleName).Result;
+            if (addedRole == null)
+            {
+                throw new Exception(addedRole?.Errors.First().Description);
+            }
+            
+            Log.Debug("manager created");
+        }
+        else
+        {
+            Log.Debug("manager already exists");
+        }
+        
+        var user = userMgr.FindByNameAsync(UserConfigs.User.UserName).Result;
         if (user == null)
         {
             user = new User
             {
-                UserName = UserConfigs.ExternalUser.UserName,
+                Id = UserConfigs.User.Id,
+                UserName = UserConfigs.User.UserName,
                 Email = "user@email.com",
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                GivenName = "Chris",
+                FirstName = "Own",
+                FullName = "Chris Own",
+                Website = "https://co.org",
+                Organisation = "CO corp",
+                OrganisationId = 123123,
+                Address = "4 st. of Freedom",
+                Location = "California, USA",
+                PersonId = 1121
             };
-            var result = userMgr.CreateAsync(user, UserConfigs.ExternalUser.Password).Result;
+            var result = userMgr.CreateAsync(user, UserConfigs.User.Password).Result;
             if (!result.Succeeded)
             {
                 throw new Exception(result.Errors.First().Description);
             }
-
-            result = userMgr.AddClaimsAsync(user, new Claim[]{
-                new (JwtClaimTypes.Name, "John Doe"),
-                new (JwtClaimTypes.GivenName, "John"),
-                new (JwtClaimTypes.FamilyName, "Doe"),
-                new (JwtClaimTypes.WebSite, "https://jd.com"),
-                new (JwtClaimTypes.Role, RoleConfigs.ExternalUserRoleConfigs.RoleName),
-                new ("organisation", "Organisation name"),
-                new (JwtClaimTypes.PhoneNumber, "0987654321"),
-                new (JwtClaimTypes.Address, "Paris, France"),
-            }).Result;
-            if (!result.Succeeded)
+            
+            var addedRole = userMgr.AddToRoleAsync(user, RoleConfigs.UserRoleConfigs.RoleName).Result;
+            if (addedRole == null)
             {
-                throw new Exception(result.Errors.First().Description);
-            }
+                throw new Exception(addedRole?.Errors.First().Description);
+            }            
             Log.Debug("user created");
         }
         else
         {
             Log.Debug("user already exists");
         }
+        
+        
     }
 }
