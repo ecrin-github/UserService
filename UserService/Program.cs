@@ -1,3 +1,5 @@
+using System.Net;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.OpenApi.Models;
 using UserService.Configs;
@@ -7,12 +9,12 @@ using UserService.Middleware;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-/*
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.KnownProxies.Add(IPAddress.Parse("51.210.99.16"));
 });
-*/
+
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddControllers();
@@ -54,19 +56,17 @@ builder.Services.Configure<KestrelServerOptions>(options =>
     options.AllowSynchronousIO = true;
 });
 
-// builder.WebHost.UseUrls("https://localhost:5270");
+builder.WebHost.UseUrls("http://localhost:7220");
 
 // Docker setting
 // builder.WebHost.UseKestrel(options => {options.Listen(IPAddress.Any, 80);});
 
 var app = builder.Build();
 
-/*
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 });
-*/
 
 app.UseMiddleware<ExceptionMiddleware>();
 
