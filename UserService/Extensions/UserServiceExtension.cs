@@ -11,47 +11,34 @@ public static class UserServiceExtension
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
     {
-        /*
-        services.AddAuthentication(options =>
-        {
-            options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-        })
-        .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
-        .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
-        {
-            options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            options.Authority = IdentityConfigs.AuthorityUrl;
-            options.ClientId = IdentityConfigs.RmsClientConfigs.ClientId;
-            options.ClientSecret = IdentityConfigs.RmsClientConfigs.ClientSecret;
-            options.ResponseType = IdentityConfigs.RmsClientConfigs.ResponseType;
-            options.SaveTokens = true;
-            options.GetClaimsFromUserInfoEndpoint = true;
-            
-            options.ClaimActions.DeleteClaim("sid");
-            options.ClaimActions.DeleteClaim("idp");
-            
-            options.Scope.Add("openid");
-            options.Scope.Add("profile");
-            options.Scope.Add("offline_access");
-            options.Scope.Add("address");
-            options.Scope.Add("email");
-            options.Scope.Add("phone");
-            options.Scope.Add("roles");
-            
-            options.ClaimActions.MapUniqueJsonKey("roles", "role");
-
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                RoleClaimType = "role"
-            };
-        });
-        */
         services.AddAuthentication("Bearer")
             .AddJwtBearer("Bearer", options =>
             {
                 options.Authority = IdentityConfigs.AuthorityUrl;
-                options.TokenValidationParameters.ValidateAudience = false;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateAudience = false
+                };
+            })
+            .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
+            {
+                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+
+                options.Authority = IdentityConfigs.AuthorityUrl;
+                options.RequireHttpsMetadata = false;
+
+                options.ClientId = IdentityConfigs.RmsClientConfigs.ClientId;
+                options.ClientSecret = IdentityConfigs.RmsClientConfigs.ClientSecret;
+
+                options.ClaimActions.MapUniqueJsonKey("roles", "role");
+
+                options.ResponseType = IdentityConfigs.RmsClientConfigs.ResponseType;
+
+                options.Scope.Add("roles");
+
+                options.GetClaimsFromUserInfoEndpoint = true;
+                options.SaveTokens = true;
+                options.TokenValidationParameters.RoleClaimType = "role";
             });
 
 
