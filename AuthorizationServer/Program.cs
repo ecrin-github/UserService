@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Serilog;
 
+const string corsPolicyName = "Open";
+
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
@@ -16,6 +18,11 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 builder.Services.AddApplicationServices(builder.Configuration);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(corsPolicyName, p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+});
 
 builder.Services.Configure<KestrelServerOptions>(options =>
 {
@@ -53,7 +60,9 @@ app.UseRouting();
 
 app.UseIdentityServer();
 app.UseAuthorization();
-        
+
+app.UseCors(corsPolicyName);
+
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapDefaultControllerRoute();
