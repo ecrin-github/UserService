@@ -10,10 +10,12 @@ const string corsPolicyName = "Open";
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
+/*
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.KnownProxies.Add(IPAddress.Parse("51.210.99.16"));
 });
+*/
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -33,10 +35,12 @@ builder.WebHost.UseUrls("http://localhost:7010");
 
 var app = builder.Build();
 
+/*
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 });
+*/
 
 app.UseMiddleware<ExceptionMiddleware>();
 

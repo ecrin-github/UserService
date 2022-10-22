@@ -1,5 +1,6 @@
-using Microsoft.AspNetCore.Authentication;
+using IdentityModel;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using UserService.Configs;
@@ -10,37 +11,31 @@ public static class UserServiceExtension
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
     {
-        services.AddAuthentication("Bearer")
-            .AddJwtBearer("Bearer", options =>
+        services.AddAuthentication
+            (options => {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            })
+            .AddCookie(options =>
             {
-                options.Authority = IdentityConfigs.AuthorityUrl;
-                options.RequireHttpsMetadata = false;
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateAudience = false
-                };
+                options.Cookie.IsEssential = true;
             })
             .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-
                 options.Authority = IdentityConfigs.AuthorityUrl;
-                options.RequireHttpsMetadata = false;
-
-                options.ClientId = IdentityConfigs.RmsClientConfigs.ClientId;
-                options.ClientSecret = IdentityConfigs.RmsClientConfigs.ClientSecret;
-
-                options.ClaimActions.MapUniqueJsonKey("roles", "role");
-
-                options.ResponseType = IdentityConfigs.RmsClientConfigs.ResponseType;
-
-                options.Scope.Add("roles");
-
-                options.GetClaimsFromUserInfoEndpoint = true;
+                options.ClientId = IdentityConfigs.LsAaiConfigs.ClientId;
+                options.ClientSecret = IdentityConfigs.LsAaiConfigs.ClientSecret;
+                options.ResponseType = "code";
                 options.SaveTokens = true;
-                options.TokenValidationParameters.RoleClaimType = "role";
+                options.UsePkce = true;
+                options.CallbackPath = "/signin-oidc";
+                options.GetClaimsFromUserInfoEndpoint = true;
+                options.Scope.Add("openid");
+                options.Scope.Add("profile");
+                options.Scope.Add("email");
+                options.Scope.Add("orcid");
             });
-
 
         return services;
     }

@@ -6,7 +6,8 @@ namespace UserService.Controllers.v1;
 
 [Route($"{ApiConfigs.ApiUrl}/{ApiConfigs.ApiVersion}")]
 [ApiController]
-[Authorize(Roles = "Admin, Manager, User")]
+// [Authorize(Roles = "Admin, Manager, User")]
+[Authorize]
 public class BaseUserApiController : ControllerBase
 {
     

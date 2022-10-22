@@ -9,6 +9,7 @@ public class UserApiController : BaseUserApiController
     [HttpGet("claims")]
     public IActionResult GetClaims()
     {
+        Console.WriteLine(User.Identity.AuthenticationType.ToString());
         return new JsonResult(from c in User.Claims select new { c.Type, c.Value });
     }
 
