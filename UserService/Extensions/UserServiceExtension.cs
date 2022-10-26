@@ -1,9 +1,13 @@
-using IdentityModel;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using UserService.Configs;
+using UserService.Helpers.Adapters;
+using UserService.Models;
+using UserService.Models.DbContext;
+using UserService.Services.RoleService;
+using UserService.Services.UserService;
 
 namespace UserService.Extensions;
 
@@ -11,6 +15,20 @@ public static class UserServiceExtension
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
     {
+        services.AddDbContext<UserDbContext>(options =>
+            options
+                .UseNpgsql(DbConfigs.ConnectionString)
+                .UseSnakeCaseNamingConvention());
+        
+        services.AddIdentity<User, IdentityRole>()
+            .AddEntityFrameworkStores<UserDbContext>()
+            .AddDefaultTokenProviders();
+
+        services.AddScoped<IUserAdapter, UserAdapter>();
+        
+        services.AddScoped<IRoleService, RoleService>();
+        services.AddScoped<IUserService, Services.UserService.UserService>();
+        
         services.AddAuthentication
             (options => {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
