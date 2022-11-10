@@ -222,7 +222,7 @@ public class UserService : IUserService
 
     public async Task<UserResponse> GetOrCreateUserAsync(UserRequest userRequest)
     {
-        var user = await _userManager.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Email.Equals(userRequest.email));
+        var user = await _userManager.Users.AsNoTracking().FirstOrDefaultAsync(x => x.LsAaiId!.Equals(userRequest.sub) || x.Email.Equals(userRequest.email));
         if (user != null)
         {
             return _userAdapter.MapUserResponse(user, await GetUserRoleAsync(user));
@@ -233,7 +233,7 @@ public class UserService : IUserService
 
     public async Task<UserResponse> CreateUserAsync(UserRequest userRequest)
     {
-        var checkUser = await _userManager.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Email.Equals(userRequest.email));
+        var checkUser = await _userManager.Users.AsNoTracking().FirstOrDefaultAsync(x => x.LsAaiId!.Equals(userRequest.sub) || x.Email.Equals(userRequest.email));
         if (checkUser != null)
         {
             throw new Exception("User already exists");
