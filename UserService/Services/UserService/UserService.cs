@@ -347,10 +347,11 @@ public class UserService : IUserService
             throw new Exception("User not found");
         }
         
-        var userRoles = await _userManager.GetRolesAsync(user);
-        if (userRoles.Count != 0)
+        var userRoles = await _dbContext.UserRoles.AsNoTracking().FirstOrDefaultAsync(x => x.UserId.Equals(id));
+        if (userRoles != null)
         {
-            await _userManager.RemoveFromRolesAsync(user, userRoles);
+            _dbContext.UserRoles.Remove(userRoles);
+            await _dbContext.SaveChangesAsync();
         }
         
         var userRole = await _dbContext.Roles.AsNoTracking().FirstOrDefaultAsync(x => x.Name.Equals(role));
@@ -359,9 +360,15 @@ public class UserService : IUserService
             throw new Exception("Role not found");
         }
         
-        var setRoleResult = await _userManager.AddToRoleAsync(user, userRole.Name);
+        var setRoleResult = await _dbContext.UserRoles.AddAsync(new IdentityUserRole<string>()
+        {
+            RoleId = userRole.Id,
+            UserId = user.Id
+        });
+
+        await _dbContext.SaveChangesAsync();
         
-        if (!setRoleResult.Succeeded)
+        if (setRoleResult == null)
         {
             throw new Exception("Role assignment failed");
         }
