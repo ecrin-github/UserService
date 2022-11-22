@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using UserService.Services.RoleService;
 
 namespace UserService.Controllers.v1;
 
 [ApiController]
+[Authorize(AuthenticationSchemes = "Bearer")]
 [Route("api/v1/[controller]/[action]")]
 public class RoleApiController : ControllerBase
 {

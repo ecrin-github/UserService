@@ -25,25 +25,25 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc($"{ApiConfigs.ApiVersion}", 
         new OpenApiInfo { Title = "The User API Documentation", Version = $"{ApiConfigs.ApiVersion}" });
     c.EnableAnnotations();
-    // var securitySchema = new OpenApiSecurityScheme
-    // {
-    //     Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-    //     Name = "Authorization",
-    //     In = ParameterLocation.Header,
-    //     Type = SecuritySchemeType.Http,
-    //     Scheme = "bearer",
-    //     Reference = new OpenApiReference
-    //     {
-    //         Type = ReferenceType.SecurityScheme,
-    //         Id = "Bearer"
-    //     }
-    // };
-    // c.AddSecurityDefinition("Bearer", securitySchema);
-    // var securityRequirement = new OpenApiSecurityRequirement
-    // {
-    //     { securitySchema, new[] { "Bearer" } }
-    // };
-    // c.AddSecurityRequirement(securityRequirement);
+    var securitySchema = new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        Reference = new OpenApiReference
+        {
+            Type = ReferenceType.SecurityScheme,
+            Id = "Bearer"
+        }
+    };
+    c.AddSecurityDefinition("Bearer", securitySchema);
+    var securityRequirement = new OpenApiSecurityRequirement
+    {
+        { securitySchema, new[] { "Bearer" } }
+    };
+    c.AddSecurityRequirement(securityRequirement);
 });
 
 builder.Services.AddCors(options =>

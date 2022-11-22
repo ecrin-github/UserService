@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using UserService.Configs;
 using UserService.Helpers.Adapters;
 using UserService.Models;
@@ -29,30 +31,17 @@ public static class UserServiceExtension
         services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IUserService, Services.UserService.UserService>();
         
-        services.AddAuthentication
-            (options => {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            })
-            .AddCookie(options =>
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
             {
-                options.Cookie.IsEssential = true;
-            })
-            .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
-            {
-                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.Authority = IdentityConfigs.AuthorityUrl;
-                options.ClientId = IdentityConfigs.LsAaiConfigs.ClientId;
-                options.ClientSecret = IdentityConfigs.LsAaiConfigs.ClientSecret;
-                options.ResponseType = "code";
-                options.SaveTokens = true;
-                options.UsePkce = true;
-                options.CallbackPath = "/signin-oidc";
-                options.GetClaimsFromUserInfoEndpoint = true;
-                options.Scope.Add("openid");
-                options.Scope.Add("profile");
-                options.Scope.Add("email");
-                options.Scope.Add("orcid");
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+
+                options.RequireHttpsMetadata = false;
             });
 
         return services;

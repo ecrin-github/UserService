@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using UserService.Contracts.User;
 using UserService.Services.UserService;
 
 namespace UserService.Controllers.v1;
 
 [ApiController]
+[Authorize(AuthenticationSchemes = "Bearer")]
 [Route("api/v1/[controller]/[action]")]
 public class UserApiController : ControllerBase
 {
