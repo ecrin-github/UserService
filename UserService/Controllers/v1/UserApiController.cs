@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using UserService.BasicAuth;
 using UserService.Contracts.User;
 using UserService.Services.UserService;
 
 namespace UserService.Controllers.v1;
 
 [ApiController]
-[Authorize(AuthenticationSchemes = "Bearer")]
+[Authorize(AuthenticationSchemes = "Bearer"), BasicAuthorization]
 [Route("api/v1/[controller]/[action]")]
 public class UserApiController : ControllerBase
 {
@@ -42,6 +43,13 @@ public class UserApiController : ControllerBase
     public async Task<IActionResult> GetUserById(string id)
     {
         var user = await _userService.GetUserAsync(id);
+        return Ok(user);
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> GetUserByLsAai(string id)
+    {
+        var user = await _userService.GetUserByLsAaiAsync(id);
         return Ok(user);
     }
     

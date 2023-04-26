@@ -201,6 +201,18 @@ public class UserService : IUserService
         var role = await GetUserRoleAsync(user);
         return _userAdapter.MapUserResponse(user, role);
     }
+    
+    public async Task<UserResponse> GetUserByLsAaiAsync(string id)
+    {
+        var user = await _userManager.Users.AsNoTracking().FirstOrDefaultAsync(x => x.LsAaiId!.Equals(id));
+        if (user == null)
+        {
+            throw new Exception("User not found");
+        }
+
+        var role = await GetUserRoleAsync(user);
+        return _userAdapter.MapUserResponse(user, role);
+    }
 
     public async Task<UserResponse> GetUserByMailAsync(string email)
     {
@@ -247,7 +259,7 @@ public class UserService : IUserService
             GivenName = userRequest.given_name,
             UserName = userRequest.email,
             Email = userRequest.email,
-            OrganisationId = 10001,
+            OrganisationId = 100001,
             Organisation = "ECRIN",
         };
         
@@ -282,7 +294,7 @@ public class UserService : IUserService
         user.FullName = userResponse.FullName;
         user.FamilyName = userResponse.FamilyName;
         user.GivenName = userResponse.GivenName;
-        user.OrganisationId = 10001;
+        user.OrganisationId = 100001;
         user.Organisation = "ECRIN";
         
         _dbContext.Users.Update(user);

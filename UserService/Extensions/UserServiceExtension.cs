@@ -1,15 +1,18 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using UserService.BasicAuth;
 using UserService.Configs;
 using UserService.Helpers.Adapters;
-using UserService.Models;
 using UserService.Models.DbContext;
+using UserService.Services.AccessService;
 using UserService.Services.RoleService;
 using UserService.Services.UserService;
+using User = UserService.Models.User;
 
 namespace UserService.Extensions;
 
@@ -30,6 +33,9 @@ public static class UserServiceExtension
         
         services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IUserService, Services.UserService.UserService>();
+        services.AddScoped<IAccessService, AccessService>();
+
+        services.AddScoped<IUserRepository, UserRepository>();
         
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
@@ -44,6 +50,9 @@ public static class UserServiceExtension
                 options.RequireHttpsMetadata = false;
             });
 
+        services.AddAuthentication()
+            .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>(BasicAuthenticationDefaults.AuthenticationScheme, null);
+        
         return services;
     }
 }

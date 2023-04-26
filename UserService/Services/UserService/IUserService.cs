@@ -9,6 +9,7 @@ public interface IUserService
     Task<IList<UserResponse>> GetUsersByOrganisationIdAsync(int orgId);
     Task<IList<UserResponse>> GetUsersByOrganisationNameAsync(string orgName);
     Task<UserResponse> GetUserAsync(string id);
+    Task<UserResponse> GetUserByLsAaiAsync(string id);
     Task<UserResponse> GetUserByMailAsync(string email);
     Task<string> GetUserRoleAsync(User user);
     Task<UserResponse> GetOrCreateUserAsync(UserRequest userRequest);
