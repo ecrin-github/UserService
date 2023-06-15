@@ -10,6 +10,8 @@ using UserService.Configs;
 using UserService.Helpers.Adapters;
 using UserService.Models.DbContext;
 using UserService.Services.AccessService;
+using UserService.Services.PeopleService;
+using UserService.Services.RMS;
 using UserService.Services.RoleService;
 using UserService.Services.UserService;
 using User = UserService.Models.User;
@@ -36,6 +38,12 @@ public static class UserServiceExtension
         services.AddScoped<IAccessService, AccessService>();
 
         services.AddScoped<IUserRepository, UserRepository>();
+
+        services.AddScoped<IPeopleService, PeopleService>();
+
+        services.AddScoped<IRmsService, RmsService>();
+
+        services.AddScoped<IAccessServiceAdapter, AccessServiceAdapter>();
         
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
